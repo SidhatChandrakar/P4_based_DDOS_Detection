@@ -29,39 +29,40 @@ You will need to open **4 separate terminal windows** to run this demonstration.
 
 ### Step 1: Compile the P4 Program
 Compile the P4 code into a JSON blueprint that the BMv2 switch can understand:
-
+```bash
 p4c-bm2-ss --p4v 16 basic1.p4 -o basic1.json
-
+```
 ### Step 2: Start the Data Plane (Terminal 1)
 
 Start the BMv2 software switch and bind its logical ports to our virtual ethernet interfaces:
-Bash
+```Bash
 
 sudo simple_switch -i 1@veth1-br -i 2@veth2-br -i 3@veth3-br basic1.json --log-console
-
+```
 (Leave this terminal running)
 ### Step 3: Setup Topology & Start AI Control Plane (Terminal 2)
 
 Run the setup script to configure the namespaces, MAC addresses, and default routing rules. Then, start the Machine Learning controller:
-Bash
+```Bash
 
 chmod +x demo_setup.sh
 ./demo_setup.sh
 python3 ml_controller.py
+```
 
-(You will see the ML model train itself and begin listening to the switch registers).
 ### Step 4: Generate Normal Traffic (Terminal 3)
 
 Verify that the normal host (h1) can communicate with the victim (h3):
-Bash
+
+```Bash
 
 sudo ip netns exec h1 ping 10.0.0.3
-
+```
 Look at Terminal 2: The ML controller will log this as "Normal Traffic". Stop the ping with Ctrl+C.
 ### Step 5: Launch the DDoS Attack (Terminal 4)
 
 Simulate a TCP SYN flood from the attacker (h2) to the victim (h3).
 (Note: We use -i u10000 to limit the flood to 100 packets/sec. This is fast enough to trigger the AI, but prevents the BMv2 software simulator from crashing due to CPU exhaustion).
-Bash
+```Bash
 
 sudo ip netns exec h2 hping3 -S 10.0.0.3 -i u10000

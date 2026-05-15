@@ -4,7 +4,7 @@ import subprocess
 import numpy as np
 from sklearn.ensemble import RandomForestClassifier
 
-print("🧠 Initializing Local ML Control Plane...")
+print(" Initializing Local ML Control Plane...")
 
 # 1. Train a basic ML Model (Normally done via Federated Learning)
 # Features: [Packet_Count_Per_Second]
@@ -14,7 +14,7 @@ y_train = np.array([0, 0, 0, 1, 1, 1]) # Over 500 pkts/sec is considered an atta
 
 clf = RandomForestClassifier(n_estimators=10)
 clf.fit(X_train, y_train)
-print("✅ ML Model Trained Successfully.")
+print("ML Model Trained Successfully.")
 
 # Helper function to run simple_switch_CLI commands
 def run_cli_command(command):
@@ -30,7 +30,7 @@ def run_cli_command(command):
 
 # Helper function to block an IP
 def block_attacker(ip_address):
-    print(f"🚨 ML MODEL TRIGGERED: Blocking IP {ip_address} in P4 Switch!")
+    print(f"ML MODEL TRIGGERED: Blocking IP {ip_address} in P4 Switch!")
     # We add a rule to drop the packet (assuming you add a 'drop' action to basic.p4, 
     # or we just route it to a blackhole port like 99)
     run_cli_command(f"table_add ipv4_table drop {ip_address} => \n")
@@ -69,14 +69,14 @@ try:
                 prediction = clf.predict([[rate]])[0]
                 
                 if prediction == 1:
-                    print(f"⚠️  ANOMALY DETECTED: {ip} is sending {rate} pkts/sec!")
+                    print(f"ANOMALY DETECTED: {ip} is sending {rate} pkts/sec!")
                     block_attacker(ip)
                     # Reset the register so it doesn't keep triggering
                     run_cli_command(f"register_write packet_counter {index} 0\n")
                 else:
-                    print(f"✅ Normal traffic from {ip}: {rate} pkts/sec")
+                    print(f"Normal traffic from {ip}: {rate} pkts/sec")
                     
         time.sleep(2) # Poll every 2 seconds
 
 except KeyboardInterrupt:
-    print("\n🛑 Shutting down ML Controller.")
+    print("\n Shutting down ML Controller.")

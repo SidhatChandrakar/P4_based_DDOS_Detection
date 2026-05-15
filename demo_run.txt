@@ -1,0 +1,12 @@
+
+sudo simple_switch -i 1@veth1-br -i 2@veth2-br -i 3@veth3-br basic.json --log-console   
+
+//for normal user
+sudo ip netns exec h1 ping 10.0.0.3
+sudo ip netns exec h1 ping 10.0.0.3 -c 4
+
+//to flood h3
+sudo ip netns exec h2 hping3 -S 10.0.0.3 --flood
+
+//to show tcp dump
+sudo tcpdump -i veth3-br -n tcp

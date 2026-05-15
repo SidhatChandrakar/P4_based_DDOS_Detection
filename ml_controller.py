@@ -35,7 +35,7 @@ def block_attacker(ip_address):
     # or we just route it to a blackhole port like 99)
     run_cli_command(f"table_add ipv4_table drop {ip_address} => \n")
 
-print("📡 Listening to P4 Switch Registers...")
+print("Listening to P4 Switch Registers...")
 
 previous_counts = {}
 
